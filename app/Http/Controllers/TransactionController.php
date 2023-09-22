@@ -15,31 +15,13 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        \dd("Haloo");
         $product = Obat::all();
         return view('transaction.transaction', compact('product'));
     }
 
     public function transactionAdd(Request $request)
     {
-        // $data = $request->all();
-        $data = [
-            'transactions' => [
-                [
-                    'obat_id' => 1,
-                    'harga' => 2000,
-                    'jumlah_bayar' => 50000,
-                    'jumlah' => 5,
-                ],
-                [
-                    'obat_id' => 2,
-                    'harga' => 2000,
-                    'jumlah_bayar' => 50000,
-                    'jumlah' => 5,
-                ],
-            ],
-            'jumlah_bayar' => 30000
-        ];
+        $data = $request->all();
         DB::beginTransaction();
         try {
             $jumlahHarga = 0;
@@ -64,8 +46,12 @@ class TransactionController extends Controller
 
                 $dataObat = Obat::find($value['obat_id']);
                 if ($dataObat) {
-                    $dataObat->jumlah_obat -= $value['jumlah'];
-                    $dataObat->save();
+                    if ($dataObat->jumlah_obat >= $value['jumlah']) {
+                        $dataObat->jumlah_obat -= $value['jumlah'];
+                        $dataObat->save();
+                    } else {
+                        // return response()->json(['error' => '' . $dataObat->nama . 'Stok Habis'], 500);
+                    }
                 }
 
                 $jumlahObat += $value['jumlah'];
@@ -77,10 +63,9 @@ class TransactionController extends Controller
             $myTransaction->jumlah_kembalian = $myTransaction->jumlah_bayar - $jumlahHarga;
             $myTransaction->jumlah_obat = $jumlahObat;
             $myTransaction->save();
-
             DB::commit();
-            dd('berhasill, cek database');
-            return view('', compact(['notaData', 'myTransaction']));
+
+            return response()->json('Berhasil', 200);
         } catch (\Exception $e) {
 
             DB::rollBack();

@@ -80,4 +80,4 @@ Route::prefix('SuperAdmin/User')->middleware(['auth', 'user-access:Admin'])->gro
 });
 
 Route::get('/transaction', [TransactionController::class, 'index']);
-Route::get('/transaction-add', [TransactionController::class, 'transactionAdd']);
+Route::post('/transaction-add', [TransactionController::class, 'transactionAdd']);
