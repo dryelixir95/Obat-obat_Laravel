@@ -4,37 +4,34 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\LaporanPenjualan;
+use App\Models\Transaksi;
+use App\Models\DetailTransaksi;
+use Illuminate\Support\Facades\DB;
 
 class LaporanPenjualanController extends Controller
 {
+
     public function index()
     {
-        $laporanPenjualans = LaporanPenjualan::All();
-        return view('penjualan.index' ,compact('laporanPenjualans'));;
-        }
+        // Mengambil data transaksi berdasarkan tanggal
+        $laporanPenjualans = Transaksi::select(
+            DB::raw('Tanggal_Transaksi as Tanggal_Penjualan'),
+            DB::raw('COUNT(*) as Total_Penjualan'),
+            DB::raw('SUM(Total_Harga) as Laba_Kotor')
+        )
+            ->groupBy('Tanggal_Transaksi')
+            ->get();
 
-    public function create()
+        return view('penjualan.index', compact('laporanPenjualans'));
+    }
+    
+
+    public function show($tanggal)
     {
-        // Logika untuk menampilkan formulir pembuatan laporan penjualan
+        $transaksi = Transaksi::where('Tanggal_Transaksi', $tanggal)->get();
+
+        return view('penjualan.show', compact('transaksi','tanggal'));
+
     }
 
-    public function store(Request $request)
-    {
-        // Logika untuk menyimpan laporan penjualan yang dibuat
-    }
-
-    public function edit(LaporanPenjualan $laporanPenjualan)
-    {
-        // Logika untuk menampilkan formulir pengeditan laporan penjualan
-    }
-
-    public function update(Request $request, LaporanPenjualan $laporanPenjualan)
-    {
-        // Logika untuk memperbarui laporan penjualan yang sudah ada
-    }
-
-    public function destroy(LaporanPenjualan $laporanPenjualan)
-    {
-        // Logika untuk menghapus laporan penjualan
-    }
 }

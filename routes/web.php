@@ -75,10 +75,6 @@ Route::prefix('Transaksi')->middleware(['auth', 'user-access:Super Admin,Admin']
 // Penjualan
 Route::prefix('Penjualan')->group(function () {
     Route::get('/', [LaporanPenjualanController::class, 'index'])->name('penjualan.index');
-    Route::get('/add', [LaporanPenjualanController::class, 'create'])->name('penjualan.create');
-    Route::post('/store', [LaporanPenjualanController::class, 'store'])->name('penjualan.store');
-    Route::get('/edit/{penjualan}', [LaporanPenjualanController::class, 'edit'])->name('penjualan.edit');
-    Route::put('/update/{penjualan}', [LaporanPenjualanController::class, 'update'])->name('penjualan.update'); 
-    Route::delete('/destroy/{penjualan}', [LaporanPenjualanController::class, 'destroy'])->name('penjualan.destroy');
+    Route::get('/show/{tanggal}', [LaporanPenjualanController::class, 'show'])->name('penjualan.show');
 });
 
